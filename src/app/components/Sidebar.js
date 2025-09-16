@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { Menu, ChevronLeft, Package, Store, DollarSign, LayoutGrid, Home, FileText } from 'lucide-react'
+import { Menu, ChevronLeft, Package, Store, DollarSign, LayoutGrid, Home, FileText, TrendingDown } from 'lucide-react'
 
 const Sidebar = () => {
   const pathname = usePathname()
@@ -24,6 +24,11 @@ const Sidebar = () => {
       title: 'รายงานรายรับ',
       path: '/revenue',
       icon: <FileText className="w-5 h-5" />
+    },
+    {
+      title: 'รายจ่าย',
+      path: '/expenses',
+      icon: <TrendingDown className="w-5 h-5" />
     },
     {
       title: 'สินค้า',

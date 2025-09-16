@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 export default function StoreStockPage() {
   const [stores, setStores] = useState([])
   const [products, setProducts] = useState([])
-  const [uniqueOwners, setUniqueOwners] = useState([])
-  const [ownerFilter, setOwnerFilter] = useState('')
   const [formData, setFormData] = useState({
     storeId: '',
     productId: '',
@@ -27,22 +25,6 @@ export default function StoreStockPage() {
     const res = await fetch('/api/products')
     const data = await res.json()
     setProducts(data)
-    
-    // ดึงข้อมูล owner ที่ไม่ซ้ำกันเพื่อใช้ในการกรอง
-    const owners = [...new Set(data.map(product => product.owner).filter(owner => owner))]
-    setUniqueOwners(owners)
-  }
-  
-  const handleOwnerFilterChange = (e) => {
-    setOwnerFilter(e.target.value)
-  }
-  
-  // ฟังก์ชันสำหรับกรองสินค้าตาม owner
-  const getFilteredProducts = () => {
-    if (!ownerFilter) return products.filter(product => product.shelf)
-    return products.filter(product => 
-      product.shelf && product.owner && product.owner.toLowerCase().includes(ownerFilter.toLowerCase())
-    )
   }
 
   const handleSubmit = async (e) => {
@@ -115,30 +97,6 @@ export default function StoreStockPage() {
 
                 <div className="mb-5">
                   <label className="block text-sm font-medium text-gray-700 mb-2">สินค้า</label>
-                  <div className="mb-3">
-                    <label className="block text-xs font-medium text-gray-700 mb-1">กรองตามเจ้าของ:</label>
-                    <div className="flex gap-2">
-                      <select
-                        value={ownerFilter}
-                        onChange={handleOwnerFilterChange}
-                        className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      >
-                        <option value="">ทั้งหมด</option>
-                        {uniqueOwners.map((owner, index) => (
-                          <option key={index} value={owner}>{owner}</option>
-                        ))}
-                      </select>
-                      {ownerFilter && (
-                        <button
-                          type="button"
-                          onClick={() => setOwnerFilter('')}
-                          className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-lg transition-colors flex items-center text-sm"
-                        >
-                          ล้าง
-                        </button>
-                      )}
-                    </div>
-                  </div>
                   <select
                     value={formData.productId}
                     onChange={(e) => setFormData({...formData, productId: e.target.value})}
@@ -146,7 +104,7 @@ export default function StoreStockPage() {
                     required
                   >
                     <option value="">-- เลือกสินค้า --</option>
-                    {getFilteredProducts().map(product => (
+                    {products.filter(product => product.shelf).map(product => (
                       <option key={product.id} value={product.id}>
                         {product.name} - {product.owner}
                       </option>
@@ -162,7 +120,6 @@ export default function StoreStockPage() {
                       type="number"
                       value={formData.quantity}
                       onChange={(e) => setFormData({...formData, quantity: e.target.value})}
-                      onClick={(e) => e.target.select()}
                       className="w-full border border-gray-300 rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       min="0"
                       required
