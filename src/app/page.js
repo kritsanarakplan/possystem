@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Package, Store, DollarSign, TrendingUp, AlertTriangle, BarChart3, ShoppingCart, Users } from 'lucide-react';
+import { Package, Store, DollarSign, TrendingUp, AlertTriangle, BarChart3, ShoppingCart, Users, FileText } from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const [stores, setStores] = useState([]);
@@ -119,18 +120,27 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold text-slate-800">รายงานสต็อกสินค้า</h1>
           <p className="text-slate-600 mt-1">ตรวจสอบสถานะสินค้าคงคลังของทุกร้าน</p>
         </div>
-        <div className="flex items-center space-x-2 text-sm text-slate-500">
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-            <span>สต็อกดี</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-            <span>สต็อกต่ำ</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <span>สต็อกหมด</span>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link 
+            href="/revenue" 
+            className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-200 flex items-center justify-center"
+          >
+            <FileText className="w-5 h-5 mr-2" />
+            <span>รายงานรายรับ</span>
+          </Link>
+          <div className="flex items-center space-x-2 text-sm text-slate-500">
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+              <span>สต็อกดี</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+              <span>สต็อกต่ำ</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              <span>สต็อกหมด</span>
+            </div>
           </div>
         </div>
       </div>

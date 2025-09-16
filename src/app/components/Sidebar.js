@@ -2,11 +2,12 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { Menu, ChevronLeft, Package, Store, DollarSign, LayoutGrid, Home } from 'lucide-react'
+import { Menu, ChevronLeft, Package, Store, DollarSign, LayoutGrid, Home, FileText } from 'lucide-react'
 
 const Sidebar = () => {
   const pathname = usePathname()
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(true) // Default to collapsed on mobile
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const menuItems = [
     {
@@ -14,10 +15,15 @@ const Sidebar = () => {
       path: '/',
       icon: <Home className="w-5 h-5" />
     },
-     {
-      title: 'รายรับ',
+    {
+      title: 'รายการขาย',
       path: '/sales',
-      icon: <Package className="w-5 h-5" />
+      icon: <DollarSign className="w-5 h-5" />
+    },
+    {
+      title: 'รายงานรายรับ',
+      path: '/revenue',
+      icon: <FileText className="w-5 h-5" />
     },
     {
       title: 'สินค้า',
@@ -35,6 +41,11 @@ const Sidebar = () => {
       icon: <LayoutGrid className="w-5 h-5" />
     }
   ]
+
+  // Toggle sidebar on mobile
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
 
   return (
     <aside 
