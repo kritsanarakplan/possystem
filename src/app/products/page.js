@@ -7,8 +7,16 @@ export default function ProductsPage() {
     name: '',
     price: 0,
     owner: '',
-    shelf: false
+    shelf: false,
+    sauceType: 'NONE'
   })
+
+  const sauceTypes = [
+    { value: 'NONE', label: 'ไม่มีซอส' },
+    { value: 'MILD', label: 'ซอสเผ็ดน้อย' },
+    { value: 'MEDIUM', label: 'ซอสเผ็ดกลาง' },
+    { value: 'HOT', label: 'ซอสเผ็ดมาก' }
+  ]
 
   useEffect(() => {
     fetchProducts()
@@ -31,12 +39,17 @@ export default function ProductsPage() {
 
       if (!res.ok) throw new Error('Failed to add product')
       
-      setNewProduct({ name: '', price: 0, owner: '', shelf: false })
+      setNewProduct({ name: '', price: 0, owner: '', shelf: false, sauceType: 'NONE' })
       fetchProducts()
       alert('เพิ่มสินค้าสำเร็จ')
     } catch (error) {
       alert('Error: ' + error.message)
     }
+  }
+
+  // Helper function to get sauce type label
+  const getSauceTypeLabel = (type) => {
+    return sauceTypes.find(sauce => sauce.value === type)?.label || 'ไม่มีซอส'
   }
 
   return (
@@ -83,6 +96,20 @@ export default function ProductsPage() {
                   required
                 />
               </div>
+              <div className="mb-4">
+                <label className="block mb-2 text-sm font-medium text-gray-700">ประเภทซอส</label>
+                <select
+                  value={newProduct.sauceType}
+                  onChange={(e) => setNewProduct({...newProduct, sauceType: e.target.value})}
+                  className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {sauceTypes.map(sauce => (
+                    <option key={sauce.value} value={sauce.value}>
+                      {sauce.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="mb-5">
                 <label className="flex items-center">
                   <input
@@ -123,6 +150,18 @@ export default function ProductsPage() {
                         <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">ใช่</span>
                       ) : (
                         <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">ไม่ใช่</span>
+                      )}
+                    </div>
+                    <div className="flex items-center mt-2">
+                      <span className="text-gray-600 mr-2">ประเภทซอส:</span>
+                      {product.sauceType && product.sauceType !== 'NONE' ? (
+                        <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                          {getSauceTypeLabel(product.sauceType)}
+                        </span>
+                      ) : (
+                        <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                          ไม่มีซอส
+                        </span>
                       )}
                     </div>
                   </div>

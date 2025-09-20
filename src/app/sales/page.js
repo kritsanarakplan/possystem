@@ -39,10 +39,10 @@ export default function SalesPage() {
   
   // ฟังก์ชันสำหรับกรองสินค้าตาม owner
   const getFilteredProducts = () => {
-    if (!ownerFilter) return products
-    return products.filter(product => 
+    if (!ownerFilter) return products || []
+    return products ? products.filter(product => 
       product.owner && product.owner.toLowerCase().includes(ownerFilter.toLowerCase())
-    )
+    ) : []
   }
 
   const handleProductClick = (product) => {
@@ -189,11 +189,11 @@ export default function SalesPage() {
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
                   {getFilteredProducts().map(product => (
-                        <button
-                          key={product.id}
-                          onClick={() => handleProductClick(product)}
-                          className="group relative p-3 sm:p-4 md:p-6 border-2 border-gray-100 rounded-lg sm:rounded-xl hover:border-blue-300 hover:shadow-xl transition-all duration-300 bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-white transform hover:-translate-y-1"
-                        >
+                    <button
+                      key={product.id}
+                      onClick={() => handleProductClick(product)}
+                      className="group relative p-3 sm:p-4 md:p-6 border-2 border-gray-100 rounded-lg sm:rounded-xl hover:border-blue-300 hover:shadow-xl transition-all duration-300 bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-white transform hover:-translate-y-1"
+                    >
                       <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 rounded-full flex items-center justify-center">
                           <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

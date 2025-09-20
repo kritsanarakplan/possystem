@@ -9,28 +9,48 @@ export async function POST(request) {
     for (const itemOrig of items) {
       const item = { ...itemOrig, productId: itemOrig.productId ?? 1 };
       
-      if (item.storeId) {
-        const product = await prisma.product.findUnique({
-          where: { id: item.productId }
+      // Get product details regardless of storeId
+      const product = await prisma.product.findUnique({
+        where: { id: item.productId }
+      })
+      
+      // Check store stock for shelf products
+      if (product?.shelf && item.storeId) {
+        const stockItem = await prisma.storeStock.findUnique({
+          where: {
+            storeId_productId: {
+              storeId: parseInt(item.storeId),
+              productId: item.productId
+            }
+          }
         })
         
-        if (product?.shelf) {
-          const stockItem = await prisma.storeStock.findUnique({
-            where: {
-              storeId_productId: {
-                storeId: parseInt(item.storeId),
-                productId: item.productId
-              }
-            }
-          })
-          
-          if (!stockItem || stockItem.stock <= 0 || stockItem.stock < item.quantity) {
-            console.log('Stock not enough or zero')
-            return NextResponse.json(
-              { error: 'สินค้าไม่พอ' },
-              { status: 400 }
-            )
+        if (!stockItem || stockItem.stock <= 0 || stockItem.stock < item.quantity) {
+          console.log('Stock not enough or zero')
+          return NextResponse.json(
+            { error: 'สินค้าไม่พอ' },
+            { status: 400 }
+          )
+        }
+      }
+      
+      // Check sauce stock if the product has a sauce type and is NOT a shelf product
+      if (product?.sauceType && product.sauceType !== 'NONE' && !product.shelf) {
+        const sauceStock = await prisma.stockSauce.findUnique({
+          where: {
+            sauceType: product.sauceType
           }
+        })
+        
+        if (!sauceStock || sauceStock.stock <= 0 || sauceStock.stock < item.quantity) {
+          return NextResponse.json(
+            { error: `ซอส${
+              product.sauceType === 'MILD' ? 'เผ็ดน้อย' : 
+              product.sauceType === 'MEDIUM' ? 'เผ็ดกลาง' : 
+              product.sauceType === 'HOT' ? 'เผ็ดมาก' : 
+              'ผัดไทย'}ไม่พอ` },
+            { status: 400 }
+          )
         }
       }
     }
@@ -65,20 +85,43 @@ export async function POST(request) {
           }
         })
 
-        // Only update stock for shelf products
-        if (item.storeId) {
-          const product = await tx.product.findUnique({
-            where: { id: item.productId }
-          })
+        // Get product details regardless of storeId
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+          select: { shelf: true, sauceType: true }
+        })
 
-          if (product?.shelf) {
-            // Update stock (we already checked stock levels)
-            await tx.storeStock.update({
+        // If product is shelf type and has storeId, update store stock
+        if (product?.shelf && item.storeId) {
+          await tx.storeStock.update({
+            where: {
+              storeId_productId: {
+                storeId: parseInt(item.storeId),
+                productId: item.productId
+              }
+            },
+            data: {
+              stock: {
+                decrement: item.quantity
+              }
+            }
+          })
+        }
+        
+        // Update sauce stock if product has a sauce type and is NOT a shelf product
+        if (product?.sauceType && product.sauceType !== 'NONE' && !product.shelf) {
+          // Find the sauce stock
+          const sauceStock = await tx.stockSauce.findUnique({
+            where: {
+              sauceType: product.sauceType
+            }
+          })
+          
+          if (sauceStock) {
+            // Update sauce stock
+            await tx.stockSauce.update({
               where: {
-                storeId_productId: {
-                  storeId: parseInt(item.storeId),
-                  productId: item.productId
-                }
+                id: sauceStock.id
               },
               data: {
                 stock: {

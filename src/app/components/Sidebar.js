@@ -44,6 +44,11 @@ const Sidebar = () => {
       title: 'จัดการสต็อก',
       path: '/store-stock',
       icon: <LayoutGrid className="w-5 h-5" />
+    },
+    {
+      title: 'จัดการสต็อกซอส',
+      path: '/stock-sauce',
+      icon: <Package className="w-5 h-5" />
     }
   ]
 

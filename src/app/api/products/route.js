@@ -18,7 +18,8 @@ export async function POST(request) {
         name: data.name,
         price: data.price,
         owner: data.owner,
-        shelf: data.shelf
+        shelf: data.shelf,
+        sauceType: data.sauceType || 'NONE'
       }
     })
     return NextResponse.json(product)
